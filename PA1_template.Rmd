@@ -8,13 +8,32 @@ output:
 
 ## Loading and preprocessing the data
 
+fileURL <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
+destFile <- "~/coursera/datascience/Course5-ReproducibleResearch/Week2/data.zip"
+xtract <- "~/coursera/datascience/Course5-ReproducibleResearch/Week2"
+fileName <- paste(xtract,"/activity.csv",sep="")
 
+download.file(fileURL, destfile = destFile )
+unzip(destFile, exdir = xtract)
+
+if(file.exists(fileName)){ 
+  actData <- read.csv(fileName,na.strings = "NA")
+}
+
+summary(actData)
+str(actData)
 
 ## What is mean total number of steps taken per day?
 
+aggrS <- aggregate(actData$steps, by=list(as.Date(actData$date,"%Y-%m-%d")),sum)
+colnames(aggrS) <- c("Date","NumSteps")
+qplot(aggrS$Date, xlab = "Date", ylab="Number of steps by day", main ="Total number of Steps taken per day") + geom_histogram(aes(weight=aggrS$NumSteps))
 
 
 ## What is the average daily activity pattern?
+aggrMn <- aggregate(actData$steps, by=list(as.Date(actData$date,"%Y-%m-%d")),mean)
+colnames(aggrMn) <- c("Date","NumSteps")
+qplot(aggrMn$Date, xlab = "Date", ylab="Number of steps by day", main ="Average number of Steps taken per day") + geom_histogram(aes(weight = aggrMn$NumSteps))
 
 
 
