@@ -38,7 +38,42 @@ qplot(aggrMn$Date, xlab = "Date", ylab="Number of steps by day", main ="Average 
 
 
 ## Imputing missing values
+library(Hmisc)
+set.seed(12345)
 
+### Find by columns with NA
+colSums(sapply(actData,is.na))
+
+### I chose HMisc impute function using mean method compared to other options such as missForest etc.
+
+narows <- which(is.na(actData$steps))
+i<- impute(actData$steps,mean)
+newactData <- data.frame(actData)
+newactData$steps[narows] <- i[narows]
+
+### Aggregate the imputed data by interval and find the sum of steps
+newaggrS <- aggregate(newactData$steps, by=list(as.Date(newactData$date,"%Y-%m-%d")),sum)
+colnames(newaggrS) <- c("Date","NumSteps")
+qplot(newaggrS$Date, xlab = "Date", ylab="Number of steps by day", main ="Total number of Steps taken per day-Imputed") + geom_histogram(aes(weight=newaggrS$NumSteps))
+
+### Aggregate the imputed data by interval and find the  mean of steps taken per day & type of day (Weekday or Weend)
+### and plot in two panels
+
+newinterAggrMn2 <- aggregate(newactData$steps, by= list(newactData$interval,newactData$daytype), mean)
+colnames(newinterAggrMn2) <- c("Slot","daytype","NumSteps")
+xyplot(NumSteps ~ Slot | daytype, data = newinterAggrMn2, type = "l", layout=c(1,2), ylab = "Number of steps", 
+       main = " Average number of steps taken per day, by type of a day-Imputed", xlab = "Interval")
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+Few observations on the differences:
+1. Using the above charts, it is evident that Weekdays seem to have , on an average, more number of steps compared to weekends. 
+
+2. There are peaks in weekdays for a day as compared to relatively smoother ups and downs in weekends
+
+3. Total number of steps for the given period also is greater on weekdays compared to weekends, as we see from the results below
+
+aggregate(newactData$steps, by = list(newactData$daytype), sum)
+
+ 
+
