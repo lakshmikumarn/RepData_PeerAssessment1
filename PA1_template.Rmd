@@ -14,7 +14,7 @@ library(lattice)
 set.seed(12345)
 ```
  
-## Loading and preprocessing the data (Question 1)
+## Loading and preprocessing the data - (Question 1)
 
 To make the script reusable & reproducible, we will script to download and pre-process data
 
@@ -45,7 +45,7 @@ str(actData)
 
 ## What is mean total number of steps taken per day?
 
-Aggregate or group the data by date/5-mintes slot to find the total number of steps taken for a day. Using qplot function render histogram(using geom function) - (Question 2)
+Aggregate or group the data by date/5-mintes slot to find the total number of steps taken for a day. Using qplot function render histogram(using geom function) - **(Question 2)**
 
 ```{r message= FALSE, warning = FALSE}
 aggrS <- aggregate(actData$steps, by=list(as.Date(actData$date,"%Y-%m-%d")),sum)
@@ -56,7 +56,7 @@ qplot(aggrS$Date, xlab = "Date", ylab="Number of steps by day", main ="Total num
 
 ## What is the average daily activity pattern?
 
-Aggregate or group the data by date/5-mintes slot to find the mean/average number of steps taken for a day. Using qplot function render histogram(using geom function) - (Question 3)
+Aggregate or group the data by date/5-mintes slot to find the mean/average number of steps taken for a day. Using qplot function render histogram(using geom function) - **(Question 3)**
 
 ```{r message= FALSE, warning = FALSE}
 aggrMn <- aggregate(actData$steps, by=list(as.Date(actData$date,"%Y-%m-%d")),mean)
@@ -64,7 +64,7 @@ colnames(aggrMn) <- c("Date","NumSteps")
 qplot(aggrMn$Date, xlab = "Date", ylab="Number of steps by day", main ="Average number of Steps taken per day") + geom_histogram(aes(weight = aggrMn$NumSteps))
 ```
 
-Similarly, plot the <b> median </b> number of steps taken per day.- (Question 3)
+Similarly, plot the **median** number of steps taken per day.- **(Question 3)**
 
 ```{r message= FALSE, warning = FALSE}
 aggrMd <- aggregate(actData$steps, by=list(as.Date(actData$date,"%Y-%m-%d")),median)
@@ -72,7 +72,7 @@ colnames(aggrMd) <- c("Date","NumSteps")
 qplot(aggrMd$Date, xlab = "Date", ylab="Number of steps by day", main ="Median of steps taken per day") + geom_histogram(aes(weight = aggrMd$NumSteps))
 ```
 
-Timeseries plot of average number of steps taken. (Question 4)
+Timeseries plot of average number of steps taken. - **(Question 4)**
 
 ```{r message= FALSE, warning = FALSE}
 interAggrMn <- aggregate(actData$steps, by= list(actData$interval), mean, na.rm= TRUE)
@@ -80,13 +80,13 @@ colnames(interAggrMn) <- c("Slot","NumSteps")
 plot(interAggrMn$Slot,interAggrMn$NumSteps, type="l", xlab="Five-minutes Slots", ylab = "Average number of steps", alpha=0.7)
 ```
 
-Five minute interval that, on average, contains the maximum number of steps (Question 5)
+Five minute interval that, on average, contains the maximum number of steps - **(Question 5)**
 
 ```{r message= FALSE, warning = FALSE}
 interAggrMn[which.max(interAggrMn$NumSteps),]
 ```
 
-## Imputing missing values (Question 6)
+## Imputing missing values - (Question 6)
 
 
 Firstly, let us look at the number of NAs by columns in the original data set.
@@ -99,7 +99,7 @@ colSums(sapply(actData,is.na))
 perc <- round( (colSums(sapply(actData,is.na))[1] / nrow(actData)), 2) * 100
 ```
 
-Based, on the output above, vairable 'steps' alone has NAs that needs to imputed. I chose 'HMisc based impute function using mean method' compared to other impute options such as missForest, KNN etc. in view of the single variant imputing needed for this situation. Also, the % of NA's is only `r perc`% of the whole data set and in one column. A new activity data set with all NAs replaced with imputed values is created as in the code snippent above, using which the 
+Based, on the output above, vairable =*steps* alone has NAs that needs to imputed. I chose *HMisc based impute function using mean method* compared to other impute options such as * missForest, KNN* etc. in view of the single variant imputing needed for this situation. Also, the percentage of NA's is only `r perc`% of the whole data set and in one column. A new activity data set with all NAs replaced with imputed values is created as in the code snippent above, using which the subsequent computation and ploting is performed.
 
 ```{r message= FALSE, warning = FALSE}
 narows <- which(is.na(actData$steps))
@@ -108,7 +108,7 @@ newactData <- data.frame(actData)
 newactData$steps[narows] <- i[narows]
 ```
 
-Aggregate the imputed data by interval and find the total number of steps per day - (Question 7)
+Aggregate the imputed data by interval and find the total number of steps per day - **(Question 7)**
 
 ```{r message= FALSE, warning = FALSE}
 
@@ -118,7 +118,7 @@ qplot(newaggrS$Date, xlab = "Date", ylab="Number of steps by day", main ="Total 
 
 ```
 
-Aggregate the imputed data by interval and find the  mean of steps taken per day & type of day (Weekday or Weend) and plot in two panels - (Question 8)
+Aggregate the imputed data by interval and find the  mean of steps taken per day & type of day (Weekday or Weend) and plot in two panels - **(Question 8)**
 
 ```{r message= FALSE, warning = FALSE}
 
@@ -132,13 +132,14 @@ tot <- aggregate(newactData$steps, by = list(newactData$daytype), sum)
 ```
 
 ## Are there differences in activity patterns between weekdays and weekends?
-<u>Few observations on the differences: </u>
+
+*Few observations on the differences:*
 
 1. Using the above charts, it is evident that Weekdays seem to have , on an average, more number of steps compared to weekends. 
 
 2. There are peaks in weekdays for a day as compared to relatively smoother ups and downs in weekends
 
-3. Total number of steps ( Weekday = `r as.integer(tot[1,2])`, weekend = `r as.integer(tot[2,2])` ) for the given period also is greater on weekdays compared to weekends, as we see from the results.
+3. Total number of steps *( Weekday = `r as.integer(tot[1,2])`, weekend = `r as.integer(tot[2,2])` )* for the given period also is greater on weekdays compared to weekends, as we see from the results.
 
 
 
